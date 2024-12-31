@@ -94,7 +94,16 @@
             transform: translateY(-2px);
         }
 
+        .error-message {
+            color: red;
+            font-size: 0.875rem;
+        }
+
         @media (max-width: 576px) {
+            body {
+                padding: 1rem;
+            }
+
             .login-container {
                 padding: 1.5rem;
             }
@@ -115,9 +124,11 @@
         <form id="login-form">
             <div class="mb-3">
                 <input type="email" class="form-control" placeholder="Email" aria-label="Email" id="email" required>
+                <div id="email-error" class="error-message"></div>
             </div>
             <div class="mb-3">
                 <input type="password" class="form-control" placeholder="Kata Sandi (Minimal 8 karakter)" aria-label="Kata Sandi" id="password" minlength="8" required>
+                <div id="password-error" class="error-message"></div>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div class="form-check">
@@ -126,7 +137,7 @@
                 </div>
                 <a href="#" class="text-decoration-none">Lupa Kata Sandi?</a>
             </div>
-            <a href="index.html" class="btn btn-primary btn-login">Masuk</a>
+            <button type="submit" class="btn btn-primary btn-login">Masuk</button>
         </form>
 
         <div class="divider">atau</div>
@@ -146,6 +157,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         const loginForm = document.getElementById("login-form");
 
@@ -156,21 +168,33 @@
             const password = document.getElementById("password").value.trim();
             const remember = document.getElementById("remember").checked;
 
+            const emailError = document.getElementById("email-error");
+            const passwordError = document.getElementById("password-error");
+
+            // Reset error messages
+            emailError.textContent = "";
+            passwordError.textContent = "";
+
             // Validasi input
+            let isValid = true;
+
             if (!validateEmail(email)) {
-                alert("Format email tidak valid!");
-                return;
+               emailError.textContent = "format email tidak valid!";
+               isValid = false;
             }
             if (password.length < 8) {
-                alert("Kata sandi harus minimal 8 karakter!");
-                return;
+                passwordError.textContent= "kata sandi harus 8 karakter!";
+                isValid = false;
             }
+            
+            if (!isValid) return;
 
             // Simpan data ke local storage
             saveToLocalStorage(email, password, remember);
 
             // Tampilkan notifikasi sukses
-            alert("Login berhasil! Data telah disimpan ke local storage.");
+            alert("Login berhasil!");
+            window.location.href = "index.html";
         });
 
         function validateEmail(email) {
@@ -181,7 +205,7 @@
         function saveToLocalStorage(email, password, remember) {
             const userData = {
                 email: email,
-                password: password,
+                // password: password,
                 remember: remember,
             };
             localStorage.setItem("user", JSON.stringify(userData));
